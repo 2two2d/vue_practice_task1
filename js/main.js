@@ -6,9 +6,6 @@ Vue.component('product', {
                 <img v-bind:alt="altText" v-bind:src="image"/>
             </div>
             <div class="product-info">
-                <div class="cart">
-                    <p>Cart({{ cart }})</p>
-                </div>
                 <h1>{{ sale }}</h1>
                 <a :href="link">More products like this</a>
                 <p v-if="inStock">In stock</p>
@@ -74,18 +71,16 @@ Vue.component('product', {
 
 
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            cart: 0,
+
             selectedVariant: 0,
         }
     },
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
         },
         rmFromCart(){
-            if(this.cart >= 1){
-                this.cart -= 1
-            }
+            this.$emit('rm-from-cart', this.variants[this.selectedVariant].variantId);
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -136,7 +131,20 @@ Vue.component('ProductDetails', {
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        premium: true,
+        cart: [],
+    },
+    methods: {
+        addToCart(id) {
+            this.cart.push(id)
+            console.log(this.cart)
+        },
+        rmFromCart(id){
+            if(this.cart.indexOf(id) !== -1){
+                this.cart.splice(this.cart.indexOf(id))
+            }
+            console.log(this.cart)
+        }
     }
 })
 
