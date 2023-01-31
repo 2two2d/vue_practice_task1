@@ -160,9 +160,13 @@ Vue.component('product', {
     
                 
     
-                <ul>
-                    <li v-for="size in sizes">{{size}}</li>
-                </ul>
+                <select v-model="current_percent">
+                    <option v-for="size in sizes" :value="size.percent">{{size.size}}</option>
+                </select>
+                
+                <div>
+                    <p>Price: {{price}}</p>
+                </div>
     
                 <button v-on:click="addToCart"
                         :disabled="!inStock"
@@ -192,21 +196,29 @@ Vue.component('product', {
             link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
             inventory: 100,
             onSale: false,
+
             variants: [
                 {
                     variantId: 2234,
                     variantColor: 'green',
                     variantImage: "./assets/vmSocks-green-onWhite.jpg",
-                    variantQuantity: 10
+                    variantQuantity: 10,
+                    price: 20,
                 },
                 {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 0,
+                    price: 30,
                 }
             ],
-            sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+            sizes: [{size: 'S', percent: 0},
+                {size: 'M', percent: 2},
+                {size: 'L', percent: 4},
+                {size: 'XL', percent: 6},
+                {size: 'XLL', percent: 8},],
+            current_percent: 2,
             selectedVariant: 0,
             reviews: []
         }
@@ -224,9 +236,10 @@ Vue.component('product', {
         },
         addReview(productReview) {
             this.reviews.push(productReview)
+        },
+        updatePrice(price){
+            return this.current_percent
         }
-
-
     },
     computed: {
         title() {
@@ -237,6 +250,9 @@ Vue.component('product', {
         },
         inStock(){
             return this.variants[this.selectedVariant].variantQuantity
+        },
+        price(){
+          return this.variants[this.selectedVariant].price + this.variants[this.selectedVariant].price*this.current_percent/100
         },
         sale(){
             return this.brand + ' ' + this.product + ' ' +  (this.onSale ? 'Распродажа' : '')
